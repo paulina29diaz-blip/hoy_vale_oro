@@ -1,0 +1,40 @@
+Unity Editor version:    6000.4.8f1 (f8b72d3d7343)
+Branch:                  6000.4/staging
+Build type:              Release
+Batch mode:              YES
+macOS version:           Version 26.5.1 (Build 25F80)
+Darwin version:          25.5.0
+Architecture:            arm64
+Running under Rosetta:   NO
+Available memory:        8192 MB
+Date:                    2026-06-22T23:12:03Z
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-franciscofafian" at "2026-06-22T23:12:03.698013Z"
+[Licensing::Client] Error: HandshakeResponse reported an error:
+	ResponseCode: 505
+	ResponseStatus: Unsupported protocol version '1.18.1'.
+[Licensing::Module] Error: Failed to handshake to channel: "LicenseClient-franciscofafian"
+[Licensing::IpcConnector] LicenseClient-franciscofafian channel disconnected successfully.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-franciscofafian-6000.4.8" at "2026-06-22T23:12:04.383125Z"
+Launching external process: /Applications/Unity/Hub/Editor/6000.4.8f1/Unity.app/Contents/Helpers/PackageManager/Server/UnityPackageManager
+
+COMMAND LINE ARGUMENTS:
+/Applications/Unity/Hub/Editor/6000.4.8f1/Unity.app/Contents/MacOS/Unity
+-batchmode
+-quit
+-projectPath
+.
+-logFile
+compile.log
+Successfully changed project path to: /Users/franciscofafian/Downloads/Facu/Videojuegos/Hoy-vale-oro-main/hoy_vale_oro
+/Users/franciscofafian/Downloads/Facu/Videojuegos/Hoy-vale-oro-main/hoy_vale_oro
+[Package Manager] Server process was shutdown
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              79cba0c4303b4ea1b187ea0c74702b4b
+  Correlation Id:          e0c6c1efd6a4e7c958929d103c72c830
+  External correlation Id: 6760077562050709496
+  Machine Id:              NgzKIfhYVLssNLzkUYgKA+Xu0RE=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-franciscofafian-6000.4.8" (connect: 0.00s, validation: 0.09s, handshake: 0.26s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-franciscofafian-6000.4.8-notifications" at "2026-06-22T23:12:04.733823Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
