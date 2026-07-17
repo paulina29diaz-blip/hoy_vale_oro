@@ -50,12 +50,44 @@ public class NPCInteraction : MonoBehaviour
             return;
         }
 
+        // Acomodar sprites de objetos específicos de nivel en tiempo de ejecución
+        AjustarSpriteObjetoAsociado();
+
         // Hide original canvas text if assigned
         if (interactionText != null)
             interactionText.SetActive(false);
 
         // Programmatically build the gorgeous post-apocalyptic interaction prompt
         BuildInteractionPrompt();
+    }
+
+    private void AjustarSpriteObjetoAsociado()
+    {
+        string sceneObjName = ObtenerNombreObjeto();
+        if (string.IsNullOrEmpty(sceneObjName)) return;
+
+        GameObject sceneObj = GameObject.Find(sceneObjName);
+        if (sceneObj == null) return;
+
+        SpriteRenderer sr = sceneObj.GetComponent<SpriteRenderer>();
+        if (sr == null) return;
+
+        // Apply custom sprites based on NPC name to align Level 3 correctly
+        if (gameObject.name == "npc7")
+        {
+            Sprite s = Resources.Load<Sprite>("Sprites/objetos/objeto1");
+            if (s != null) sr.sprite = s;
+        }
+        else if (gameObject.name == "npc8")
+        {
+            Sprite s = Resources.Load<Sprite>("Sprites/objetos/objeto26");
+            if (s != null) sr.sprite = s;
+        }
+        else if (gameObject.name == "npc9")
+        {
+            Sprite s = Resources.Load<Sprite>("Sprites/objetos/objeto25");
+            if (s != null) sr.sprite = s;
+        }
     }
 
     /// <summary>
@@ -206,7 +238,7 @@ public class NPCInteraction : MonoBehaviour
             case "npc14":                      tratoNpc14Terminado     = true; break;
             case "npc15":                      tratoNpc15Terminado     = true; break;
             case "npc16":                      tratoNpc16Terminado     = true; break;
-            case "vagabundo":                  tratoVagabundoTerminado = true; break;
+            case "vagabundo": case "npc2":     tratoVagabundoTerminado = true; break;
         }
 
         // Ocultar el objeto de escena asociado INMEDIATAMENTE (sin esperar al reload)

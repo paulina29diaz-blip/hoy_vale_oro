@@ -49,8 +49,8 @@ public class MapSceneManager : MonoBehaviour
 
     void Start()
     {
-        // Diálogo introductorio: se muestra solo la primera vez que se entra al mapa
-        IntroDialogo.IntentarMostrar();
+        // Diálogo introductorio: ahora se dispara desde BotonMenuPrincipal al presionar Iniciar Juego
+        // IntroDialogo.IntentarMostrar(); // <- movido a BotonMenuPrincipal.cs
     }
 
     private void ConectarCandado(string nivelName, string candadoName)

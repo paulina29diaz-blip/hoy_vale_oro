@@ -54,11 +54,23 @@ public class BotonMenuPrincipal : MonoBehaviour, IPointerEnterHandler, IPointerE
             PlayerPrefs.DeleteKey("nivel_4_caminito_completado");
             PlayerPrefs.DeleteKey("nivel_5_uade_completado");
             PlayerPrefs.DeleteKey("nivel_6_obelisco_completado");
+
+            // Reset intro dialogue flag so it plays on the first map load of the new game
+            IntroDialogo.ResetearParaNuevaPartida();
+
             // Mark that a game session has started (so MapSceneManager doesn't auto-reset)
             PlayerPrefs.SetInt("sesion_activa", 1);
             PlayerPrefs.Save();
 
-            SceneManager.LoadScene("videointro");
+            DialogoManager.puzzleCarlosCompletado = false;
+            DialogoManager.puzzleBeatrizCompletado = false;
+            DialogoManager.puzzleSantinoCompletado = false;
+            DialogoManager.puzzleMartinCompletado = false;
+            DialogoManager.puzzleAntonellaCompletado = false;
+            // Disparar el di\u00e1logo introductorio de Fran al iniciar partida nueva
+            IntroDialogo.IntentarMostrar();
+
+            SceneManager.LoadScene("mapa");
         }
     }
 }

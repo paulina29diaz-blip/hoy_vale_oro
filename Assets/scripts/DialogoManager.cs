@@ -16,7 +16,7 @@ public class DialogoManager : MonoBehaviour
 
     public static DialogoManager Instance;
 
-    private bool dialogoAbierto = false;
+    public bool dialogoAbierto = false;
 
     private enum State
     {
@@ -60,10 +60,20 @@ public class DialogoManager : MonoBehaviour
     private GameObject btnHonestoDesafioCustom;
     private GameObject btnChamuyeroDesafioCustom;
     private GameObject btnMentirosoDesafioCustom;
+    private GameObject btnIniciarPuzzleCarlos;
+    public static bool puzzleCarlosCompletado = false;
+    private GameObject btnIniciarPuzzleBeatriz;
+    public static bool puzzleBeatrizCompletado = false;
+    private GameObject btnIniciarPuzzleSantino;
+    public static bool puzzleSantinoCompletado = false;
+    private GameObject btnIniciarPuzzleMartin;
+    public static bool puzzleMartinCompletado = false;
+    private GameObject btnIniciarPuzzleAntonella;
+    public static bool puzzleAntonellaCompletado = false;
 
     // Center Popup Elements
     private GameObject popupObjeto;
-    private TextMeshProUGUI popupTexto;
+    public TextMeshProUGUI popupTexto;
 
     private Sprite boxSprite;
 
@@ -648,12 +658,12 @@ public class DialogoManager : MonoBehaviour
             {
                 playerNameHeader.text = "JUGADOR PRINCIPAL";
             }
-            playerBoxTexto.text = "\"" + ReemplazarNombresEnTexto(opcionSeleccionada.jugadorTexto) + "\"";
+            playerBoxTexto.text = ReemplazarNombresEnTexto(opcionSeleccionada.jugadorTexto);
             
             // Use success or failure reaction text depending on the strategy check
             npcReactionText = exito 
-                ? "\"" + ReemplazarNombresEnTexto(opcionSeleccionada.npcExito) + "\""
-                : "\"" + ReemplazarNombresEnTexto(opcionSeleccionada.npcFallo) + "\"";
+                ? ReemplazarNombresEnTexto(opcionSeleccionada.npcExito)
+                : ReemplazarNombresEnTexto(opcionSeleccionada.npcFallo);
 
             customDetailResult = exito 
                 ? opcionSeleccionada.detalleExito 
@@ -662,7 +672,7 @@ public class DialogoManager : MonoBehaviour
         else
         {
             playerBoxTexto.text = "...";
-            npcReactionText = "\"Mostrame qué tenés para ofrecer.\"";
+            npcReactionText = "Mostrame qué tenés para ofrecer.";
         }
     }
 
@@ -741,11 +751,11 @@ public class DialogoManager : MonoBehaviour
 
                     if (totalFallosNPC > 1)
                     {
-                        npcBoxTexto.text = "\"¡Te dije que eso no me sirve! Mostrame algo útil de una vez o cancelamos el trato.\"";
+                        npcBoxTexto.text = "¡Te dije que eso no me sirve! Mostrame algo útil de una vez o cancelamos el trato.";
                     }
                     else
                     {
-                        npcBoxTexto.text = "\"Eso no me sirve. Mostrame qué otra cosa tenés.\"";
+                        npcBoxTexto.text = "Eso no me sirve. Mostrame qué otra cosa tenés.";
                     }
                     btnContinuarDialogoObjeto.SetActive(false);
 
@@ -987,6 +997,66 @@ public class DialogoManager : MonoBehaviour
             AbrirInventarioDesdeBoton
         );
         btnAbrirInventarioCustom.SetActive(false);
+
+        btnIniciarPuzzleCarlos = CrearBotonCustom(
+            "CustomBtnIniciarPuzzleCarlos",
+            "AYUDAR A REPARAR FOTO",
+            new Vector2(originalNpcPos.x + 195f, originalNpcPos.y - 365f),
+            new Vector2(240, 45),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            IniciarPuzzleCarlosDesdeBoton
+        );
+        btnIniciarPuzzleCarlos.SetActive(false);
+
+        btnIniciarPuzzleBeatriz = CrearBotonCustom(
+            "CustomBtnIniciarPuzzleBeatriz",
+            "BUSCAR CAJA EN ESCOMBROS",
+            new Vector2(originalNpcPos.x + 195f, originalNpcPos.y - 365f),
+            new Vector2(240, 45),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            IniciarPuzzleBeatrizDesdeBoton
+        );
+        btnIniciarPuzzleBeatriz.SetActive(false);
+
+        btnIniciarPuzzleSantino = CrearBotonCustom(
+            "CustomBtnIniciarPuzzleSantino",
+            "REPARAR GENERADOR",
+            new Vector2(originalNpcPos.x + 195f, originalNpcPos.y - 365f),
+            new Vector2(240, 45),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            IniciarPuzzleSantinoDesdeBoton
+        );
+        btnIniciarPuzzleSantino.SetActive(false);
+
+        btnIniciarPuzzleMartin = CrearBotonCustom(
+            "CustomBtnIniciarPuzzleMartin",
+            "DESTRABAR DEPÓSITO",
+            new Vector2(originalNpcPos.x + 195f, originalNpcPos.y - 365f),
+            new Vector2(240, 45),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            IniciarPuzzleMartinDesdeBoton
+        );
+        btnIniciarPuzzleMartin.SetActive(false);
+
+        btnIniciarPuzzleAntonella = CrearBotonCustom(
+            "CustomBtnIniciarPuzzleAntonella",
+            "ORDENAR BOTIQUÍN",
+            new Vector2(originalNpcPos.x + 195f, originalNpcPos.y - 365f),
+            new Vector2(240, 45),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            IniciarPuzzleAntonellaDesdeBoton
+        );
+        btnIniciarPuzzleAntonella.SetActive(false);
 
         btnRechazarTratoCustom = CrearBotonCustom(
             "CustomBtnRechazarTrato",
@@ -2054,6 +2124,24 @@ public class DialogoManager : MonoBehaviour
         bool isCorrect = IsCorrectItemForNPC(escenarioActual.npcNombre, itemName);
         exito = isCorrect;
         
+        // Si es el trato con npc3 Carlos y el objeto es correcto (garrafa), y el puzzle NO está completado:
+        if (isCorrect && escenarioActual.npcNombre.ToLower() == "carlos" && itemName.ToLower() == "garrafa" && !puzzleCarlosCompletado)
+        {
+            if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+            if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+            panelBotones.SetActive(false);
+            
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.CloseInventario();
+            }
+
+            GameObject minigameGO = new GameObject("PuzzleMinigameCarlos");
+            PuzzleMinigame minigame = minigameGO.AddComponent<PuzzleMinigame>();
+            minigame.Iniciar(this, itemName);
+            return;
+        }
+
         if (!isCorrect)
         {
             totalFallosNPC++;
@@ -2234,8 +2322,157 @@ public class DialogoManager : MonoBehaviour
         }
 
         chosenItemOfferName = itemName;
-        playerBoxTexto.text = "\"" + ReemplazarNombresEnTexto(playerText) + "\"";
-        npcReactionText = "\"" + ReemplazarNombresEnTexto(npcReaction) + "\"";
+        playerBoxTexto.text = ReemplazarNombresEnTexto(playerText);
+        npcReactionText = ReemplazarNombresEnTexto(npcReaction);
+    }
+
+    private void IniciarPuzzleCarlosDesdeBoton()
+    {
+        if (btnIniciarPuzzleCarlos != null) btnIniciarPuzzleCarlos.SetActive(false);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+        if (panelBotones != null) panelBotones.SetActive(false);
+        
+        GameObject minigameGO = new GameObject("PuzzleMinigameCarlos");
+        PuzzleMinigame minigame = minigameGO.AddComponent<PuzzleMinigame>();
+        minigame.Iniciar(this, "garrafa");
+    }
+
+    public void FinalizarPuzzleExitoCarlos()
+    {
+        puzzleCarlosCompletado = true;
+        
+        // Mostrar diálogo de trueque original (pedir garrafa)
+        npcBoxTexto.text = ReemplazarNombresEnTexto(escenarioActual.npcPregunta);
+        
+        // Ocultar botón de puzzle y mostrar botón de abrir inventario
+        if (btnIniciarPuzzleCarlos != null) btnIniciarPuzzleCarlos.SetActive(false);
+        if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(true);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(true);
+    }
+
+    private void IniciarPuzzleBeatrizDesdeBoton()
+    {
+        if (btnIniciarPuzzleBeatriz != null) btnIniciarPuzzleBeatriz.SetActive(false);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+        if (panelBotones != null) panelBotones.SetActive(false);
+        
+        GameObject minigameGO = new GameObject("DebrisMinigameBeatriz");
+        DebrisMinigame minigame = minigameGO.AddComponent<DebrisMinigame>();
+        minigame.Iniciar(this);
+    }
+
+    public void FinalizarPuzzleExitoBeatriz()
+    {
+        puzzleBeatrizCompletado = true;
+        
+        // Mostrar diálogo de trueque original (pedir pitusas)
+        npcBoxTexto.text = ReemplazarNombresEnTexto(escenarioActual.npcPregunta);
+        
+        // Ocultar botón de puzzle y mostrar botón de abrir inventario
+        if (btnIniciarPuzzleBeatriz != null) btnIniciarPuzzleBeatriz.SetActive(false);
+        if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(true);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(true);
+    }
+
+    private void IniciarPuzzleSantinoDesdeBoton()
+    {
+        if (btnIniciarPuzzleSantino != null) btnIniciarPuzzleSantino.SetActive(false);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+        if (panelBotones != null) panelBotones.SetActive(false);
+        
+        GameObject minigameGO = new GameObject("CablesMinigameSantino");
+        CablesMinigame minigame = minigameGO.AddComponent<CablesMinigame>();
+        minigame.Iniciar(this);
+    }
+
+    public void FinalizarPuzzleExitoSantino()
+    {
+        puzzleSantinoCompletado = true;
+        
+        // Mostrar diálogo de trueque original (pedir cacerola)
+        npcBoxTexto.text = ReemplazarNombresEnTexto(escenarioActual.npcPregunta);
+        
+        // Ocultar botón de puzzle y mostrar botón de abrir inventario
+        if (btnIniciarPuzzleSantino != null) btnIniciarPuzzleSantino.SetActive(false);
+        if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(true);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(true);
+    }
+
+    private void IniciarPuzzleMartinDesdeBoton()
+    {
+        if (btnIniciarPuzzleMartin != null) btnIniciarPuzzleMartin.SetActive(false);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+        if (panelBotones != null) panelBotones.SetActive(false);
+        
+        GameObject minigameGO = new GameObject("WheelsMinigameMartin");
+        WheelsMinigame minigame = minigameGO.AddComponent<WheelsMinigame>();
+        minigame.Iniciar(this);
+    }
+
+    public void FinalizarPuzzleExitoMartin()
+    {
+        puzzleMartinCompletado = true;
+        
+        // Mostrar diálogo de trueque original (pedir brujula)
+        npcBoxTexto.text = ReemplazarNombresEnTexto(escenarioActual.npcPregunta);
+        
+        // Ocultar botón de puzzle y mostrar botón de abrir inventario
+        if (btnIniciarPuzzleMartin != null) btnIniciarPuzzleMartin.SetActive(false);
+        if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(true);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(true);
+    }
+
+    private void IniciarPuzzleAntonellaDesdeBoton()
+    {
+        if (btnIniciarPuzzleAntonella != null) btnIniciarPuzzleAntonella.SetActive(false);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+        if (panelBotones != null) panelBotones.SetActive(false);
+        
+        GameObject minigameGO = new GameObject("MedicineMinigameAntonella");
+        MedicineMinigame minigame = minigameGO.AddComponent<MedicineMinigame>();
+        minigame.Iniciar(this);
+    }
+
+    public void FinalizarPuzzleExitoAntonella()
+    {
+        puzzleAntonellaCompletado = true;
+        
+        // Mostrar diálogo de trueque original (pedir botiquin)
+        npcBoxTexto.text = ReemplazarNombresEnTexto(escenarioActual.npcPregunta);
+        
+        // Ocultar botón de puzzle y mostrar botón de abrir inventario
+        if (btnIniciarPuzzleAntonella != null) btnIniciarPuzzleAntonella.SetActive(false);
+        if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(true);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(true);
+    }
+
+    public void FinalizarMinijuegoExitoCarlos(string itemName)
+    {
+        exito = true;
+        chosenItemOfferName = itemName;
+
+        if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+        if (btnRechazarTratoCustom != null) btnRechazarTratoCustom.SetActive(false);
+        panelBotones.SetActive(false);
+
+        npcBoxObjeto.SetActive(false);
+        playerBoxObjeto.SetActive(true);
+        btnContinuarDialogoObjeto.SetActive(true);
+
+        RectTransform btnRect = btnContinuarDialogoObjeto.GetComponent<RectTransform>();
+        if (btnRect != null)
+        {
+            btnRect.anchoredPosition = new Vector2(originalPlayerPos.x + 195f, originalPlayerPos.y - 320f);
+        }
+
+        currentState = State.JugadorOfrecioObjeto;
+
+        string playerText = "Te doy esta garrafa de gas cargada, ideal para el taller y alta presión.";
+        string npcReaction = "¡Espectacular! Una garrafa cargada es justo lo que requiero para mis trabajos. Tomá la caja de herramientas.";
+        customDetailResult = "Conseguiste 1 Caja de Herramientas\nLe diste tu garrafa";
+
+        playerBoxTexto.text = ReemplazarNombresEnTexto(playerText);
+        npcReactionText = ReemplazarNombresEnTexto(npcReaction);
     }
 
     public bool IsOfferingState()
@@ -2270,8 +2507,37 @@ public class DialogoManager : MonoBehaviour
         btnContinuarDialogoObjeto.SetActive(false);
         popupObjeto.SetActive(false);
 
-        // Show the initial question/clue in the NPC box
-        npcBoxTexto.text = "\"" + ReemplazarNombresEnTexto(escenarioActual.npcPregunta) + "\"";
+        // Configuración de texto inicial para Carlos (NPC3), Beatriz (NPC5), Santino (NPC9), Martín (NPC11) o Antonella (NPC15) si no hicieron el puzzle
+        bool esCarlos = escenarioActual != null && escenarioActual.npcNombre.ToLower() == "carlos";
+        bool esBeatriz = escenarioActual != null && escenarioActual.npcNombre.ToLower() == "beatriz";
+        bool esSantino = escenarioActual != null && escenarioActual.npcNombre.ToLower() == "santino";
+        bool esMartin = escenarioActual != null && escenarioActual.npcNombre.ToLower() == "martín";
+        bool esAntonella = escenarioActual != null && escenarioActual.npcNombre.ToLower() == "antonella";
+        
+        if (esCarlos && !puzzleCarlosCompletado)
+        {
+            npcBoxTexto.text = "Sé que para entrar al refugio del Obelisco necesitás esta caja de herramientas. Yo no voy hacia allá, estoy buscando a mi familia. Por eso te quiero pedir un favor antes de hacer el trueque: ayudame a reparar esta foto rota de ellos.";
+        }
+        else if (esBeatriz && !puzzleBeatrizCompletado)
+        {
+            npcBoxTexto.text = "Antes de que todo pasara, guardé en una caja los recuerdos más importantes de mi familia. Quedó perdida entre los escombros de por aquí y no pude volver a encontrarla. Sé que puede parecer una caja vieja, pero para mí significa todo. Si me ayudás a recuperarla, te daré algo que puede servirte para llegar al Obelisco.";
+        }
+        else if (esSantino && !puzzleSantinoCompletado)
+        {
+            npcBoxTexto.text = "Desde que se cortó la energía, este lugar dejó de sentirse como un refugio. El generador sigue vivo, pero algunos cables se soltaron y no puedo arreglarlo solo. Si me ayudás a devolverle la luz a este lugar, te entregaré algo que guardé para alguien que necesitara seguir avanzando.";
+        }
+        else if (esMartin && !puzzleMartinCompletado)
+        {
+            npcBoxTexto.text = "El depósito quedó bloqueado después del derrumbe y ahí adentro guardamos las últimas provisiones que nos quedan. Intenté abrir la puerta, pero el mecanismo se trabó. Me dijeron que la contraseña es 3 veces 7. Si conseguís destrabarla, podés quedarte con algo de lo que encontremos adentro.";
+        }
+        else if (esAntonella && !puzzleAntonellaCompletado)
+        {
+            npcBoxTexto.text = "Encontré este botiquín entre los restos de una ambulancia. Las etiquetas de varios medicamentos quedaron gastadas y ahora está todo mezclado. Necesito volver a ordenarlo antes de que alguien use el remedio equivocado. Si me ayudás, te daré algo que ya no necesito.";
+        }
+        else
+        {
+            npcBoxTexto.text = ReemplazarNombresEnTexto(escenarioActual.npcPregunta);
+        }
 
         string lastNPC = NPCInteraction.lastInteractedNPC.ToLower();
         bool isDesafioNPC = lastNPC == "npc1" || lastNPC.Contains("combativa_0") ||
@@ -2284,6 +2550,13 @@ public class DialogoManager : MonoBehaviour
         {
             panelBotones.SetActive(false);
         }
+
+        // Esconder botones de puzzle por defecto
+        if (btnIniciarPuzzleCarlos != null) btnIniciarPuzzleCarlos.SetActive(false);
+        if (btnIniciarPuzzleBeatriz != null) btnIniciarPuzzleBeatriz.SetActive(false);
+        if (btnIniciarPuzzleSantino != null) btnIniciarPuzzleSantino.SetActive(false);
+        if (btnIniciarPuzzleMartin != null) btnIniciarPuzzleMartin.SetActive(false);
+        if (btnIniciarPuzzleAntonella != null) btnIniciarPuzzleAntonella.SetActive(false);
 
         if (isDesafioNPC)
         {
@@ -2303,10 +2576,41 @@ public class DialogoManager : MonoBehaviour
             if (btnChamuyeroDesafioCustom != null) btnChamuyeroDesafioCustom.SetActive(false);
             if (btnMentirosoDesafioCustom != null) btnMentirosoDesafioCustom.SetActive(false);
 
-            if (btnAbrirInventarioCustom != null)
+            if (esCarlos && !puzzleCarlosCompletado)
             {
-                btnAbrirInventarioCustom.SetActive(true);
+                if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+                if (btnIniciarPuzzleCarlos != null) btnIniciarPuzzleCarlos.SetActive(true);
             }
+            else if (esBeatriz && !puzzleBeatrizCompletado)
+            {
+                if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+                if (btnIniciarPuzzleBeatriz != null) btnIniciarPuzzleBeatriz.SetActive(true);
+            }
+            else if (esSantino && !puzzleSantinoCompletado)
+            {
+                if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+                if (btnIniciarPuzzleSantino != null) btnIniciarPuzzleSantino.SetActive(true);
+            }
+            else if (esMartin && !puzzleMartinCompletado)
+            {
+                if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+                if (btnIniciarPuzzleMartin != null) btnIniciarPuzzleMartin.SetActive(true);
+            }
+            else if (esAntonella && !puzzleAntonellaCompletado)
+            {
+                if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(false);
+                if (btnIniciarPuzzleAntonella != null) btnIniciarPuzzleAntonella.SetActive(true);
+            }
+            else
+            {
+                if (btnAbrirInventarioCustom != null) btnAbrirInventarioCustom.SetActive(true);
+                if (btnIniciarPuzzleCarlos != null) btnIniciarPuzzleCarlos.SetActive(false);
+                if (btnIniciarPuzzleBeatriz != null) btnIniciarPuzzleBeatriz.SetActive(false);
+                if (btnIniciarPuzzleSantino != null) btnIniciarPuzzleSantino.SetActive(false);
+                if (btnIniciarPuzzleMartin != null) btnIniciarPuzzleMartin.SetActive(false);
+                if (btnIniciarPuzzleAntonella != null) btnIniciarPuzzleAntonella.SetActive(false);
+            }
+
             if (btnRechazarTratoCustom != null)
             {
                 btnRechazarTratoCustom.SetActive(true);

@@ -87,6 +87,20 @@ public class InventoryManager : MonoBehaviour
 
     private GameObject btnLockObj;
     private GameObject btnOfrecerObj;
+    private Material silhouetteMaterial;
+
+    // Patience bar elements
+    private GameObject patienceBarContainer;
+    private Image patienceLiquidImg;
+    private TextMeshProUGUI txtPatienceBarLabel;
+    private float currentPatience = 1.0f;
+    private float patienceTimerDuration = 35f; // 35 seconds to choose (slower)
+    private bool isPatienceBarActive = false;
+
+    // Rastrojero checking button and labels
+    private GameObject btnRevisarRastrojero;
+    private GameObject txtExplicacionRastrojero;
+    private bool isRevisandoRastrojero = false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void Initialize()
@@ -180,6 +194,10 @@ public class InventoryManager : MonoBehaviour
 
     private void VerificarEscenaMenu(string sceneName)
     {
+        isPatienceBarActive = false;
+        if (patienceBarContainer != null) patienceBarContainer.SetActive(false);
+        if (btnRevisarRastrojero != null) btnRevisarRastrojero.SetActive(false);
+        if (txtExplicacionRastrojero != null) txtExplicacionRastrojero.SetActive(false);
         bool isMenuOrMap = (sceneName == "menu" || sceneName == "videointro" || sceneName == "mapa" || sceneName == "dialogo" || sceneName == "dialogos" || sceneName == "Intropikirrin");
         if (sceneName == "menu" || sceneName == "videointro" || sceneName == "Intropikirrin")
         {
@@ -296,6 +314,35 @@ public class InventoryManager : MonoBehaviour
         {
             jugadorMovimiento = null;
             trackeandoPosicion = false;
+        }
+
+        // Patience bar depletion logic during Beto's trade
+        if (isPatienceBarActive && panelInventarioObjeto != null && panelInventarioObjeto.activeSelf)
+        {
+            float rateMultiplier = isRevisandoRastrojero ? 4.0f : 1.0f; // 4x faster depletion when looking at inventory!
+            currentPatience -= (Time.deltaTime * rateMultiplier) / patienceTimerDuration;
+            if (patienceLiquidImg != null)
+            {
+                // Physically shrink the bar width since Image.Type.Filled ignores null sprite crop
+                patienceLiquidImg.rectTransform.sizeDelta = new Vector2(434f * currentPatience, -6f);
+                patienceLiquidImg.color = Color.Lerp(new Color(0.9f, 0.15f, 0.15f, 0.9f), new Color(0.2f, 0.75f, 0.3f, 0.9f), currentPatience);
+            }
+
+            if (currentPatience <= 0f)
+            {
+                currentPatience = 0f;
+                isPatienceBarActive = false;
+                isRevisandoRastrojero = false;
+                CloseInventario();
+                if (DialogoManager.Instance != null)
+                {
+                    DialogoManager.Instance.RechazarTrato();
+                    if (DialogoManager.Instance.popupTexto != null)
+                    {
+                        DialogoManager.Instance.popupTexto.text = "<color=#F44336>¡TRATO NO HECHO!</color>\n\nBeto se quedó sin paciencia.";
+                    }
+                }
+            }
         }
     }
 
@@ -600,7 +647,7 @@ public class InventoryManager : MonoBehaviour
             weight = 0.5f, 
             type = "$", 
             description = "Manta térmica de tecnología solar para captar calor.",
-            customIcon = GetSprite(20),
+            customIcon = GetSprite(25),
             quantity = 1
         });
     }
@@ -608,7 +655,7 @@ public class InventoryManager : MonoBehaviour
     private List<Sprite> CargarSpritesObjetos()
     {
         List<Sprite> list = new List<Sprite>();
-        for (int i = 1; i <= 25; i++)
+        for (int i = 1; i <= 26; i++)
         {
             Sprite s = CargarSpriteDesdeResources("Sprites/objetos/objeto" + i);
             if (s != null)
@@ -830,12 +877,74 @@ public class InventoryManager : MonoBehaviour
         txtTotalWeight.fontSize = 15;
         txtTotalWeight.color = new Color(0.75f, 0.75f, 0.75f, 1f);
 
-        RectTransform weightRect = weightObj.GetComponent<RectTransform>();
-        weightRect.anchorMin = new Vector2(0f, 1f);
-        weightRect.anchorMax = new Vector2(1f, 1f);
-        weightRect.pivot = new Vector2(0.5f, 1f);
-        weightRect.anchoredPosition = new Vector2(25, -55);
-        weightRect.sizeDelta = new Vector2(-50, 25);
+        // Create Revisar Rastrojero button
+        btnRevisarRastrojero = new GameObject("BtnRevisarRastrojero");
+        btnRevisarRastrojero.transform.SetParent(panelInventarioObjeto.transform, false);
+
+        RectTransform rBtnRect = btnRevisarRastrojero.AddComponent<RectTransform>();
+        rBtnRect.anchorMin = new Vector2(0.5f, 1f);
+        rBtnRect.anchorMax = new Vector2(0.5f, 1f);
+        rBtnRect.pivot = new Vector2(0.5f, 1f);
+        rBtnRect.anchoredPosition = new Vector2(-110f, -22f);
+        rBtnRect.sizeDelta = new Vector2(200f, 50f);
+
+        Image rBtnImg = btnRevisarRastrojero.AddComponent<Image>();
+        rBtnImg.color = new Color(0.45f, 0.25f, 0.15f, 1f); // Metallic scrap brown
+
+        Outline rBtnOutline = btnRevisarRastrojero.AddComponent<Outline>();
+        rBtnOutline.effectColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+        rBtnOutline.effectDistance = new Vector2(1.5f, 1.5f);
+
+        GameObject rBtnTextObj = new GameObject("Text");
+        rBtnTextObj.transform.SetParent(btnRevisarRastrojero.transform, false);
+        TextMeshProUGUI rBtnText = rBtnTextObj.AddComponent<TextMeshProUGUI>();
+        rBtnText.text = "IR AL RASTROJERO\n(MANTENER)";
+        rBtnText.fontStyle = FontStyles.Bold;
+        rBtnText.alignment = TextAlignmentOptions.Center;
+        rBtnText.fontSize = 11;
+        rBtnText.color = new Color(0.95f, 0.95f, 0.9f, 1f);
+        ApplyFont(rBtnText, true);
+
+        RectTransform rBtnTextRect = rBtnTextObj.GetComponent<RectTransform>();
+        rBtnTextRect.anchorMin = Vector2.zero;
+        rBtnTextRect.anchorMax = Vector2.one;
+        rBtnTextRect.offsetMin = Vector2.zero;
+        rBtnTextRect.offsetMax = Vector2.zero;
+
+        RastrojeroPressDetector detector = btnRevisarRastrojero.AddComponent<RastrojeroPressDetector>();
+        detector.onDown = () => {
+            isRevisandoRastrojero = true;
+            // Deduct 15% patience instantly
+            currentPatience = Mathf.Max(0f, currentPatience - 0.15f);
+            UpdateInventoryUI();
+        };
+        detector.onUp = () => {
+            isRevisandoRastrojero = false;
+            UpdateInventoryUI();
+        };
+
+        btnRevisarRastrojero.SetActive(false);
+
+        // Create Explicacion Rastrojero text
+        txtExplicacionRastrojero = new GameObject("TxtExplicacionRastrojero");
+        txtExplicacionRastrojero.transform.SetParent(panelInventarioObjeto.transform, false);
+
+        RectTransform rExpRect = txtExplicacionRastrojero.AddComponent<RectTransform>();
+        TextMeshProUGUI rExpText = txtExplicacionRastrojero.AddComponent<TextMeshProUGUI>();
+        rExpText.text = "<color=#FF8C00>REGLA:</color>\nIr al rastrojero cuesta paciencia (-15%) y la consume 4 veces más rápido.";
+        rExpText.alignment = TextAlignmentOptions.Left;
+        rExpText.fontSize = 10f;
+        rExpText.fontStyle = FontStyles.Normal;
+        rExpText.color = new Color(0.85f, 0.85f, 0.8f, 1f);
+        ApplyFont(rExpText, false);
+
+        rExpRect.anchorMin = new Vector2(0.5f, 1f);
+        rExpRect.anchorMax = new Vector2(0.5f, 1f);
+        rExpRect.pivot = new Vector2(0.5f, 1f);
+        rExpRect.anchoredPosition = new Vector2(110f, -22f);
+        rExpRect.sizeDelta = new Vector2(200f, 50f);
+
+        txtExplicacionRastrojero.SetActive(false);
 
         // Rastrojero Cargo Tab/Bar
         GameObject tabObj = new GameObject("CargoTab");
@@ -983,21 +1092,7 @@ public class InventoryManager : MonoBehaviour
         toolDescRect.offsetMin = new Vector2(15, 10);
         toolDescRect.offsetMax = new Vector2(-15, -35);
 
-        // 7. Create Footer Elements
-        GameObject footTitleObj = new GameObject("TxtFootTitle");
-        footTitleObj.transform.SetParent(panelInventarioObjeto.transform, false);
-        TextMeshProUGUI footTitle = footTitleObj.AddComponent<TextMeshProUGUI>();
-        footTitle.text = "GRILLA DE INVENTARIO";
-        footTitle.fontStyle = FontStyles.Bold;
-        footTitle.fontSize = 13;
-        footTitle.color = new Color(0.36f, 0.61f, 0.78f, 0.8f);
-
-        RectTransform footTitleRect = footTitleObj.GetComponent<RectTransform>();
-        footTitleRect.anchorMin = new Vector2(0f, 0f);
-        footTitleRect.anchorMax = new Vector2(1f, 0f);
-        footTitleRect.pivot = new Vector2(0.5f, 0f);
-        footTitleRect.anchoredPosition = new Vector2(30, 70);
-        footTitleRect.sizeDelta = new Vector2(-60, 20);
+        // 7. Create Footer Elements (GRILLA DE INVENTARIO removed as per user request)
 
         // Apply custom fonts to Main Panel
         ApplyFont(txtCapacidad, true);
@@ -1005,7 +1100,6 @@ public class InventoryManager : MonoBehaviour
         ApplyFont(tabText, true);
         ApplyFont(txtTooltipName, true);
         ApplyFont(txtTooltipDesc, true);
-        ApplyFont(footTitle, true);
 
         // Keep Button (A) - Removed as per simplified inventory UI requirements
         // GameObject btnKeepObj = CrearBotonAccion("BtnKeep", "MANTENER", new Color(0.2f, 0.45f, 0.2f, 1f), -165);
@@ -1479,18 +1573,91 @@ public class InventoryManager : MonoBehaviour
         return buttonObj;
     }
 
+    private int GetTradeNPCIndex(string npc)
+    {
+        if (string.IsNullOrEmpty(npc)) return -1;
+        string lower = npc.ToLower();
+        if (lower == "npc2" || lower.Contains("vagabundo")) return 2;
+        if (lower == "npc6" || lower.Contains("jetsar")) return 6;
+        if (lower == "npc8" || lower.Contains("li")) return 8;
+        if (lower == "npc12" || lower.Contains("tomás") || lower.Contains("tomas")) return 12;
+        if (lower == "npc14" || lower.Contains("ezequiel")) return 14;
+        return -1;
+    }
+
+    private float GetPatienceDurationForNPC(int npcIdx)
+    {
+        switch (npcIdx)
+        {
+            case 2: return 35f;
+            case 6: return 31f;
+            case 8: return 27f;
+            case 12: return 23f;
+            case 14: return 19f;
+            default: return 35f;
+        }
+    }
+
+    private string GetNPCDisplayName(int npcIdx)
+    {
+        switch (npcIdx)
+        {
+            case 2: return "BETO";
+            case 6: return "JETSAR";
+            case 8: return "LI";
+            case 12: return "TOMÁS";
+            case 14: return "EZEQUIEL";
+            default: return "NPC";
+        }
+    }
+
     public void OpenInventario()
     {
         if (panelInventarioObjeto != null)
         {
             panelInventarioObjeto.SetActive(true);
             selectedIndex = -1; // Reset selection on open
+            
+            int npcIndex = NPCInteraction.lastInteractedNPC != null ? GetTradeNPCIndex(NPCInteraction.lastInteractedNPC) : -1;
+            bool esMysteryNPC = npcIndex != -1 && DialogoManager.Instance != null && DialogoManager.Instance.dialogoAbierto;
+
+            if (esMysteryNPC)
+            {
+                CrearBarraPaciencia();
+                if (patienceBarContainer != null) patienceBarContainer.SetActive(true);
+                
+                if (txtPatienceBarLabel != null)
+                {
+                    txtPatienceBarLabel.text = $"PACIENCIA DE {GetNPCDisplayName(npcIndex)}";
+                }
+                
+                patienceTimerDuration = GetPatienceDurationForNPC(npcIndex);
+                currentPatience = 1.0f;
+                isPatienceBarActive = true;
+                isRevisandoRastrojero = false;
+
+                // Show top warning controls
+                if (btnRevisarRastrojero != null) btnRevisarRastrojero.SetActive(true);
+                if (txtExplicacionRastrojero != null) txtExplicacionRastrojero.SetActive(true);
+            }
+            else
+            {
+                if (patienceBarContainer != null) patienceBarContainer.SetActive(false);
+                isPatienceBarActive = false;
+                isRevisandoRastrojero = false;
+
+                if (btnRevisarRastrojero != null) btnRevisarRastrojero.SetActive(false);
+                if (txtExplicacionRastrojero != null) txtExplicacionRastrojero.SetActive(false);
+            }
+            
             UpdateInventoryUI();
         }
     }
 
     public void CloseInventario()
     {
+        isPatienceBarActive = false;
+        isRevisandoRastrojero = false;
         if (panelInventarioObjeto != null)
         {
             panelInventarioObjeto.SetActive(false);
@@ -1501,6 +1668,60 @@ public class InventoryManager : MonoBehaviour
         {
             DialogoManager.Instance.RegresarAInicioDialogo();
         }
+    }
+
+    private void CrearBarraPaciencia()
+    {
+        if (patienceBarContainer != null) return; // already created
+
+        patienceBarContainer = new GameObject("PatienceBarContainer");
+        patienceBarContainer.transform.SetParent(panelInventarioObjeto.transform, false);
+
+        RectTransform cRect = patienceBarContainer.AddComponent<RectTransform>();
+        cRect.anchorMin = new Vector2(0.5f, 0f);
+        cRect.anchorMax = new Vector2(0.5f, 0f);
+        cRect.pivot = new Vector2(0.5f, 0f);
+        cRect.anchoredPosition = new Vector2(0f, 212f);
+        cRect.sizeDelta = new Vector2(440f, 32f);
+
+        Image cImg = patienceBarContainer.AddComponent<Image>();
+        cImg.color = new Color(0.12f, 0.12f, 0.14f, 0.95f);
+
+        Outline cOutline = patienceBarContainer.AddComponent<Outline>();
+        cOutline.effectColor = new Color(0.35f, 0.35f, 0.35f, 0.6f);
+        cOutline.effectDistance = new Vector2(1.5f, 1.5f);
+
+        // Fill/Liquid Bar
+        GameObject liquidObj = new GameObject("LiquidBar");
+        liquidObj.transform.SetParent(patienceBarContainer.transform, false);
+
+        RectTransform lRectTrans = liquidObj.AddComponent<RectTransform>();
+        lRectTrans.anchorMin = new Vector2(0f, 0f);
+        lRectTrans.anchorMax = new Vector2(0f, 1f); // Anchored to left edge, stretching vertically
+        lRectTrans.pivot = new Vector2(0f, 0.5f);
+        lRectTrans.anchoredPosition = new Vector2(3f, 0f); // X offset 3f
+        lRectTrans.sizeDelta = new Vector2(434f, -6f); // Stretching with -6 offset
+
+        patienceLiquidImg = liquidObj.AddComponent<Image>();
+        patienceLiquidImg.color = new Color(0.2f, 0.75f, 0.3f, 0.9f); // Green patience bar
+
+        // Label
+        GameObject labelObj = new GameObject("Label");
+        labelObj.transform.SetParent(patienceBarContainer.transform, false);
+
+        txtPatienceBarLabel = labelObj.AddComponent<TextMeshProUGUI>();
+        txtPatienceBarLabel.text = "PACIENCIA DE BETO";
+        txtPatienceBarLabel.alignment = TextAlignmentOptions.Center;
+        txtPatienceBarLabel.fontSize = 15; // Increased to 15!
+        txtPatienceBarLabel.fontStyle = FontStyles.Bold;
+        txtPatienceBarLabel.color = Color.white;
+        ApplyFont(txtPatienceBarLabel, true);
+
+        RectTransform lRect = labelObj.GetComponent<RectTransform>();
+        lRect.anchorMin = Vector2.zero;
+        lRect.anchorMax = Vector2.one;
+        lRect.offsetMin = Vector2.zero;
+        lRect.offsetMax = Vector2.zero;
     }
 
     private void ToggleInventario()
@@ -1563,6 +1784,25 @@ public class InventoryManager : MonoBehaviour
 
     private void UpdateInventoryUI()
     {
+        // Check if currently trading with one of the 5 mystery NPCs (Beto, Jetsar, Li, Tomás, Ezequiel)
+        int npcIndex = NPCInteraction.lastInteractedNPC != null ? GetTradeNPCIndex(NPCInteraction.lastInteractedNPC) : -1;
+        bool esNPC2 = npcIndex != -1 && DialogoManager.Instance != null && DialogoManager.Instance.dialogoAbierto;
+
+        // Initialize silhouette material if needed
+        if (esNPC2 && silhouetteMaterial == null)
+        {
+            Shader silShader = Resources.Load<Shader>("Shaders/UISilhouette");
+            if (silShader == null)
+            {
+                silShader = Shader.Find("UI/Silhouette");
+            }
+
+            if (silShader != null)
+            {
+                silhouetteMaterial = new Material(silShader);
+            }
+        }
+
         // 1. Calculate total weight
         float totalWeight = 0;
         foreach (var item in items)
@@ -1572,8 +1812,8 @@ public class InventoryManager : MonoBehaviour
         
         // Update both HUD and Main Panel capacity texts to reflect slots instead of weight
         txtHudCapacidad.text = $"INVENTARIO [{items.Count}]";
-        txtCapacidad.text = $"<color=#FF8C00>CAPACIDAD:</color> RANURAS DE INVENTARIO";
-        txtTotalWeight.text = $"CANTIDAD DE OBJETOS: {items.Count}";
+        txtCapacidad.text = esNPC2 ? "" : $"<color=#FF8C00>CAPACIDAD:</color> RANURAS DE INVENTARIO";
+        txtTotalWeight.text = esNPC2 ? "" : $"CANTIDAD DE OBJETOS: {items.Count}";
 
         // Update HUD hint text based on whether the main inventory panel is open
         if (txtHudHint != null && panelInventarioObjeto != null)
@@ -1597,17 +1837,21 @@ public class InventoryManager : MonoBehaviour
                 Item item = items[i];
                 if (item.customIcon != null)
                 {
-                    if (txtCode != null) txtCode.text = item.code;
+                    if (txtCode != null) txtCode.text = esNPC2 ? "" : item.code;
                     if (iconImg != null)
                     {
                         iconImg.sprite = item.customIcon;
-                        iconImg.gameObject.SetActive(true);
+                        // Draw silhouette when esNPC2 is true AND we are not peeking; normal full-color when peeking
+                        bool mostrarSilueta = esNPC2 && !isRevisandoRastrojero;
+                        iconImg.material = mostrarSilueta ? silhouetteMaterial : null;
+                        iconImg.color = mostrarSilueta ? (silhouetteMaterial != null ? Color.white : Color.black) : Color.white;
+                        iconImg.gameObject.SetActive(true); // Always visible!
                     }
                 }
                 else
                 {
                     if (iconImg != null) iconImg.gameObject.SetActive(false);
-                    if (txtCode != null) txtCode.text = item.code;
+                    if (txtCode != null) txtCode.text = esNPC2 ? "" : item.code;
                 }
             }
             else
@@ -1656,7 +1900,11 @@ public class InventoryManager : MonoBehaviour
                     if (iconImg != null)
                     {
                         iconImg.sprite = item.customIcon;
-                        iconImg.gameObject.SetActive(true);
+                        // Draw silhouette when esNPC2 is true AND we are not peeking; normal full-color when peeking
+                        bool mostrarSilueta = esNPC2 && !isRevisandoRastrojero;
+                        iconImg.material = mostrarSilueta ? silhouetteMaterial : null;
+                        iconImg.color = mostrarSilueta ? (silhouetteMaterial != null ? Color.white : Color.black) : Color.white;
+                        iconImg.gameObject.SetActive(true); // Always visible!
                     }
                 }
                 else
@@ -1664,13 +1912,17 @@ public class InventoryManager : MonoBehaviour
                     if (iconImg != null) iconImg.gameObject.SetActive(false);
                     if (txtCode != null)
                     {
-                        txtCode.text = item.code;
-                        txtCode.gameObject.SetActive(true);
+                        txtCode.text = esNPC2 ? "" : item.code;
+                        txtCode.gameObject.SetActive(!esNPC2);
                     }
                 }
 
-                if (txtWeight != null) txtWeight.text = $"{item.weight:F1}kg";
-                if (txtQuantity != null) txtQuantity.text = item.quantity.ToString();
+                // Hide weight info if trading with Beto (NPC2) and not peeking
+                if (txtWeight != null) txtWeight.text = (esNPC2 && !isRevisandoRastrojero) ? "" : $"{item.weight:F1}kg";
+                
+                // Hide quantity if trading with Beto and not peeking
+                if (txtQuantity != null) txtQuantity.text = (esNPC2 && !isRevisandoRastrojero) ? "" : item.quantity.ToString();
+                
                 if (txtLockIndicator != null) txtLockIndicator.text = item.isLocked ? "BLOQ" : "";
             }
             else
@@ -1712,8 +1964,20 @@ public class InventoryManager : MonoBehaviour
         if (selectedIndex >= 0 && selectedIndex < items.Count)
         {
             Item item = items[selectedIndex];
-            txtTooltipName.text = item.name.ToUpper();
-            txtTooltipDesc.text = $"{item.description}\nPeso: {item.weight:F1} kg | Cantidad: {item.quantity}";
+            
+            if (esNPC2 && !isRevisandoRastrojero)
+            {
+                txtTooltipName.text = ""; // Hide name completely
+                txtTooltipDesc.fontSize = 17f; // Larger size for Beto's warning text
+                txtTooltipDesc.text = "No es buena idea mostrar todo mi inventario. Tendré que elegir el objeto de memoria.";
+            }
+            else
+            {
+                txtTooltipName.text = item.name.ToUpper();
+                txtTooltipDesc.fontSize = 12f; // Restore original size
+                txtTooltipDesc.text = $"{item.description}\nPeso: {item.weight:F1} kg | Cantidad: {item.quantity}";
+            }
+            
             if (txtBtnLockLabel != null)
             {
                 txtBtnLockLabel.text = item.isLocked ? "Desbloquear objeto" : "Bloquear objeto";
@@ -1721,8 +1985,19 @@ public class InventoryManager : MonoBehaviour
         }
         else
         {
-            txtTooltipName.text = "SELECCIONA UN OBJETO";
-            txtTooltipDesc.text = "Haz clic en una ranura del inventario para ver los detalles.";
+            if (esNPC2 && !isRevisandoRastrojero)
+            {
+                txtTooltipName.text = "ATENCIÓN";
+                txtTooltipDesc.fontSize = 17f; // Larger size for Beto's warning text
+                txtTooltipDesc.text = "No es buena idea mostrar todo mi inventario. Tendré que elegir el objeto de memoria.";
+            }
+            else
+            {
+                txtTooltipName.text = "SELECCIONA UN OBJETO";
+                txtTooltipDesc.fontSize = 12f; // Restore original size
+                txtTooltipDesc.text = "Haz clic en una ranura del inventario para ver los detalles.";
+            }
+
             if (txtBtnLockLabel != null)
             {
                 txtBtnLockLabel.text = "Bloquear objeto";
@@ -2162,5 +2437,26 @@ public class InventoryManager : MonoBehaviour
             panelConfiguracionObjeto.SetActive(false);
         }
         Time.timeScale = 1f;
+    }
+}
+
+public class RastrojeroPressDetector : MonoBehaviour, UnityEngine.EventSystems.IPointerDownHandler, UnityEngine.EventSystems.IPointerUpHandler
+{
+    public System.Action onDown;
+    public System.Action onUp;
+
+    public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
+    {
+        if (onDown != null) onDown();
+    }
+
+    public void OnPointerUp(UnityEngine.EventSystems.PointerEventData eventData)
+    {
+        if (onUp != null) onUp();
+    }
+
+    void OnDisable()
+    {
+        if (onUp != null) onUp();
     }
 }

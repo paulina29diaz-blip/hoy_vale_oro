@@ -4,6 +4,24 @@
 /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
+/[MemoryCaptures]/
+.DS_Store
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.bak
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
 /[Uu]serSettings/
 /[MemoryCaptures]/
 

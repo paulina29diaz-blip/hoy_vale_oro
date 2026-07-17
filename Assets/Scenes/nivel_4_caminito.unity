@@ -359,6 +359,11 @@ MonoBehaviour:
   velocidad: 6
   aceleracion: 2
   tiempoFrenado: 0.6
+  spriteRueda: {fileID: 21300000, guid: 818fa8b4c0dadb44a4d4a5f67220fbb2, type: 3}
+  escalaRueda: 0.075
+  posRuedaDelantera: {x: 1.32, y: -0.62}
+  posRuedaTrasera: {x: -1.32, y: -0.62}
+  multiplicadorGiro: 150
 --- !u!50 &80703017
 Rigidbody2D:
   serializedVersion: 5

@@ -6,14 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Intropikirrin.unity
-    guid: ac0a047f1a72c4a21b06aaa597b735fd
+    path: Assets/Scenes/menu.unity
+    guid: 27569e1aae43440c399586651e7b1f3e
   - enabled: 1
     path: Assets/Scenes/escenatrueque.unity
     guid: deb745dd3daac4a7b9051b254f1063d6
-  - enabled: 1
-    path: Assets/Scenes/menu.unity
-    guid: 27569e1aae43440c399586651e7b1f3e
   - enabled: 1
     path: Assets/Scenes/videointro.unity
     guid: 0ca7a73cbc991413b9a635efb9c130f7
@@ -38,9 +35,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/nivel_6_obelisco.unity
     guid: ef7de249a22ec432c999b6d3f0338464
-  - enabled: 0
-    path: Assets/Scenes/dialogo.unity
-    guid: e956d6d9e6f674594adca86899590295
   - enabled: 1
     path: Assets/Scenes/dialogos.unity
     guid: eba76e7dd72d47efbfd0c133f21e4329

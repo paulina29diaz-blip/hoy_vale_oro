@@ -113,7 +113,7 @@ public static class VideoSceneCreator
 
         // Add VideoSceneManager and link VideoPlayer reference
         VideoSceneManager sceneManager = videoObj.AddComponent<VideoSceneManager>();
-        sceneManager.videoPlayer = videoPlayer;
+        // sceneManager.videoPlayer = videoPlayer; // VideoSceneManager ya no usa VideoPlayer (usa novela gráfica)
 
         // Save the newly generated scene
         EditorSceneManager.SaveScene(newScene, scenePath);
